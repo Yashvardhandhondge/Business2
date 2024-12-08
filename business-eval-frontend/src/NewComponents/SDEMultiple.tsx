@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -22,24 +22,26 @@ const sdeMultipleCard: React.FC<Props> = ({ state, updateState }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [sdeMultiple, setSdeMultiple] = useState(state.sde_multiple);
   const [askingPrice, setAskingPrice] = useState(state.askingPrice);
-  const [sceValue, setSCEValue] = useState(state.sce);
+  const [sceValue, setSCEValue] = useState(state.sde);
   const [notes, setNotes] = useState("");
-  const [showMessageBox, setShowMessageBox] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
 
+  useEffect(() => {
+    setSdeMultiple(state.sdeMultiple);
+    setAskingPrice(state.askingPrice);
+    setSCEValue(state.sde);
+  }, [state]);
   const handleSaveChanges = () => {
     updateState("sdeMultiple", sdeMultiple);
     updateState("askingPrice", askingPrice);
-    updateState("sce", sceValue);
-    setShowMessageBox(true); 
-    setTimeout(() => setShowMessageBox(false), 3000); 
+
     setIsDialogOpen(false);
   };
 
   const handleCancel = () => {
-    setSdeMultiple(state.askingPrice / state.sce);
+    setSdeMultiple(state.askingPrice / state.sde);
     setAskingPrice(state.askingPrice);
-    setSCEValue(state.sce);
+    setSCEValue(state.sde);
     setNotes("");
     setIsDialogOpen(false);
   };
@@ -73,7 +75,7 @@ const sdeMultipleCard: React.FC<Props> = ({ state, updateState }) => {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit SCE Multiple Card</DialogTitle>
+            <DialogTitle>Edit SDE Multiple Card</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <label className="font-semibold" htmlFor="askingPrice">
@@ -88,7 +90,7 @@ const sdeMultipleCard: React.FC<Props> = ({ state, updateState }) => {
               className="w-full"
             />
             <label className="font-semibold" htmlFor="sceValue">
-              SCE Value
+              SDE Value
             </label>
             <Input
               id="sceValue"
@@ -99,7 +101,7 @@ const sdeMultipleCard: React.FC<Props> = ({ state, updateState }) => {
               className="w-full"
             />
             <label className="font-semibold" htmlFor="sdeMultiple">
-              SCE Multiple (Calculated)
+              SDE Multiple (Calculated)
             </label>
             <Input
               id="sdeMultiple"

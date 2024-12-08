@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 const Login = React.lazy(() => import('../pages/login'));
 const Signup = React.lazy(() => import('../pages/signup'));
@@ -19,6 +19,7 @@ const Router: React.FC = () => {
         <Routes>
           <Route path="/addbusiness" element={<AddBusiness />} />
           <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<Navigate to="/login" />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/reset-password" element={<ResetPassword />} />

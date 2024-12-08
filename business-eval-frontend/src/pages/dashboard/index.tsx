@@ -54,6 +54,8 @@ const App: React.FC = () => {
     additional_loan_term:0,
     additional_loan_rate:0,
     additional_loan_amount:0,
+    newExpenses:0,
+    additionalDebt: 0,
     notes: {
       currentCashflow: ["Notes for currentCashflow"],
       expectedSalary: ["Notes for expectedSalary"],
@@ -69,6 +71,7 @@ const App: React.FC = () => {
       dscr: ["Notes for dscr"],
       grossMultiple: ["Notes for grossMultiple"],
       sdeMultiple: ["Notes for sdeMultiple"],
+      business: ["Notes for business"],
     }
   });
 
@@ -102,30 +105,33 @@ const App: React.FC = () => {
       setState({
         ...state,
         currentCashflow: data?.business?.data?.current_cashflow.value || 0,
-        expectedSalary: data?.business?.data?.expected_salary.value || 0,
-        grossRevenue: data?.business?.data?.gross_revenue.value || 0,
-        askingPrice: data?.business?.data?.asking_price.value || 0,
-        sbaLoanPayment: data?.business?.data?.sba_loan_payment.value || 0,
-        loan_sba_term: data?.business?.data?.loan_sba.term || 0,
-        loan_sba_rate: data?.business?.data?.loan_sba.rate || 0,
+        expectedSalary: data?.business?.data?.expected_salary?.value || 0,
+        grossRevenue: data?.business?.data?.gross_revenue?.value || 0,
+        askingPrice: data?.business?.data?.asking_price?.value || 0,
+        sbaLoanPayment: data?.business?.data?.sba_loan_payment?.value || 0,
+        loan_sba_term: data?.business?.data?.loan_sba?.term || 0,
+        loan_sba_rate: data?.business?.data?.loan_sba?.rate || 0,
         additional_loan_amount: data?.business?.data?.additional_loan.amount || 0,
-        additional_loan_term: data?.business?.data?.additional_loan.term || 0,
-        additional_loan_rate: data?.business?.data?.additional_loan.rate || 0,
-        additionalLoanPayment: data?.business?.data?.additional_loan.amount || 0,
-        totalDebtPayments: (data?.business?.data?.loan_sba.amount + data?.business?.data?.additional_loan.amount) || 0,
-        projectedNetProfitMargin: data?.business?.metrics?.net_profit_margin || 0,
-        dscr: data?.business?.metrics?.dscr || 0,
-        grossMultiple: data?.business?.metrics?.equiity_multiple || 0,
-        sdeMultiple: data?.business?.metrics?.sde_multiple || 0,
-        sde: data?.business?.data?.sde.value || 0,
-        projectedCashflow: data?.business?.data?.projected_cashflow.value || 0,
-        loan_sba_amount: data?.business?.data?.loan_sba.amount || 0,
+        additional_loan_term: data?.business?.data?.additional_loan?.term || 0,
+        additional_loan_rate: data?.business?.data?.additional_loan?.rate || 0,
+        additionalLoanPayment: data?.business?.data?.additional_loan?.amount || 0,
+        totalDebtPayments: data?.business?.data?.total_debt_payments?.value || 0,
+        projectedNetProfitMargin: data?.business?.metrics?.net_profit_margin?.value || 0,
+        dscr: data?.business?.metrics?.dscr?.value || 0,
+        grossMultiple: data?.business?.metrics?.gross_multiple?.value || 0,
+        sdeMultiple: data?.business?.metrics?.sde_multiple?.value || 0,
+        sde: data?.business?.data?.sde?.value || 0,
+        projectedCashflow: data?.business?.data?.projected_cashflow?.value || 0,
+        loan_sba_amount: data?.business?.data?.loan_sba?.amount || 0,
+        newExpenses: data?.business?.data?.new_expenses?.value || 0,
+        additionalDebt: data?.business?.data?.additional_debt?.value || 0,
         notes:{
           ...state.notes,
-          currentCashflow: data?.business?.data?.current_cashflow.notes || ["Notes for currentCashflow"],
-          expectedSalary: data?.business?.data?.expected_salary.notes || ["Notes for expectedSalary"],
-          grossRevenue: data?.business?.data?.gross_revenue.notes || ["Notes for grossRevenue"],
-          askingPrice: data?.business?.data?.asking_price.notes || ["Notes for askingPrice"],
+          currentCashflow: data?.business?.data?.current_cashflow?.notes || ["Notes for currentCashflow"],
+          expectedSalary: data?.business?.data?.expected_salary?.notes || ["Notes for expectedSalary"],
+          grossRevenue: data?.business?.data?.gross_revenue?.notes || ["Notes for grossRevenue"],
+          askingPrice: data?.business?.data?.asking_price?.notes || ["Notes for askingPrice"],
+          business: data?.business?.data?.business_notes || ["Notes for business"],
           // sde: data?.business?.data?.sde.notes || ["Notes for sde"],
           // projectedCashflow: data?.business?.data?.projected_cashflow.notes || ["Notes for projectedCashflow"],
           // totalDebtPayments: data?.business?.data?.loan_sba.notes || ["Notes for totalDebtPayments"],
@@ -168,12 +174,15 @@ const App: React.FC = () => {
           sde: business?.sde.value || 0,
           projectedCashflow: business?.projected_cashflow.value || 0,
           loan_sba_amount: business?.loan_sba.amount || 0,
+          newExpenses: business?.new_expenses.value || 0,
+          additionalDebt: business?.additional_debt.value || 0,
           notes:{
           ...state.notes,
           currentCashflow: business?.current_cashflow.notes || ["Notes for currentCashflow"],
           expectedSalary: business?.data?.expected_salary.notes || ["Notes for expectedSalary"],
           grossRevenue: business?.gross_revenue.notes || ["Notes for grossRevenue"],
           askingPrice: business?.asking_price.notes || ["Notes for askingPrice"],
+          business: business?.business_notes || ["Notes for business"],
           }
         })
       }
@@ -208,13 +217,13 @@ const App: React.FC = () => {
       const additionalLoanPayment = calculateYearlyPayment(state.additional_loan_amount, state.additional_loan_term, state.additional_loan_rate);
       const sbaLoanPayment = calculateYearlyPayment(state.loan_sba_amount, state.loan_sba_term, state.loan_sba_rate);
 
-      const totalDebtPayments = Number((sbaLoanPayment + additionalLoanPayment).toFixed(2)) || 0; 
+      
       
       const dscr = state.totalDebtPayments > 0 
-        ? Number(((state.currentCashflow + state.expectedSalary) / state.totalDebtPayments).toFixed(2))
+        ? Number(((state.currentCashflow - state.expectedSalary) / state.totalDebtPayments).toFixed(4))
         : 0;
   
-      const projectedCashflow = state.currentCashflow - state.totalDebtPayments;
+      const projectedCashflow = state.currentCashflow - state.totalDebtPayments - state.newExpenses;
   
       const grossMultiple = state.grossRevenue > 0 
         ? Number((state.askingPrice / state.grossRevenue).toFixed(2))
@@ -232,7 +241,7 @@ const App: React.FC = () => {
   
       setState((prevState) => ({
         ...prevState,
-        totalDebtPayments,
+        // totalDebtPayments,
         dscr,
         projectedCashflow,
         grossMultiple,
@@ -254,7 +263,20 @@ const App: React.FC = () => {
     state.sde,
     state.loan_sba_amount,
     state.additional_loan_amount,
+    state.newExpenses,
+    state.additionalDebt
   ]);
+
+  useEffect(() => {
+    const totalDebtPayments = Number((state.sbaLoanPayment + state.additionalLoanPayment).toFixed(2)) || 0; 
+    setState((prevState) => ({
+      ...prevState,
+      totalDebtPayments
+    }))
+  },[
+    state.additionalLoanPayment,
+    state.sbaLoanPayment,
+  ])
   
   const handleSave = async () => {
    
@@ -274,6 +296,8 @@ const App: React.FC = () => {
       total_debt_payments: {value: state.totalDebtPayments},
       sba_loan_payment: {value: state.sbaLoanPayment},
       additional_loan_payment: {value: state.additionalLoanPayment},
+      new_expenses: {value:state.newExpenses},
+      additional_debt: {value:state.additionalDebt}
     };
 
     if(customMetrics.length >= 0){
@@ -532,7 +556,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="app-container min-h-screen bg-blue-50">
+    <div className="app-container min-h-screen bg-gradient-to-br from-violet-600 to-teal-400">
       <TopBar data={businessData?.data} />
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="metrics-grid">
@@ -547,7 +571,7 @@ const App: React.FC = () => {
                 padding: "12px",
                 minHeight: "100px",
               }}
-              className="bg-blue-50 rounded-lg"
+              className="bg-gradient-to-br from-violet-600 to-teal-400 rounded-lg"
             >
               {metricCards
                 .filter(

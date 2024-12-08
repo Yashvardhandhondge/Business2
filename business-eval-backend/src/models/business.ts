@@ -74,9 +74,9 @@ const MetricSchema = new Schema({
 const businessSchema: Schema = new Schema({
     user_id: { type: Schema.Types.ObjectId, ref: 'User' },
     business_name: { type: String, required: true },
-    business_notes: { type: String },
-    business_location: { type: String },
-    business_url: { type: String },
+    business_notes: { type: String, default: '' },
+    business_location: { type: String, default: '' },
+    business_url: { type: String, default: '' },
     business_attachments: { type: [String], default: [] },
 
     //Independent Metrics
@@ -102,6 +102,7 @@ const businessSchema: Schema = new Schema({
     expected_salary: MetricSchema,//expected salary
     loan_down_payment: MetricSchema,
     additional_startup_capital: MetricSchema,
+    additional_debt: MetricSchema,
 
     dscr: MetricSchema,
     projected_cashflow: MetricSchema,

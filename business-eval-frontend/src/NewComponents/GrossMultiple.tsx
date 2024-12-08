@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -24,15 +24,20 @@ const GrossMultipleCard: React.FC<Props> = ({ state, updateState }) => {
   const [askingPrice, setAskingPrice] = useState(state.askingPrice);
   const [grossRevenue, setGrossRevenue] = useState(state.grossRevenue);
   const [notes, setNotes] = useState("");
-  const [showMessageBox, setShowMessageBox] = useState(false);
+  
   const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
+
+  useEffect(()=>{
+    setGrossMultiple(state.grossMultiple);
+    setAskingPrice(state.askingPrice);
+    setGrossRevenue(state.grossRevenue);
+  },[state])
 
   const handleSaveChanges = () => {
     updateState("grossMultiple", grossMultiple);
     updateState("askingPrice", askingPrice);
     updateState("grossRevenue", grossRevenue);
-    setShowMessageBox(true); 
-    setTimeout(() => setShowMessageBox(false), 3000); 
+    
     setIsDialogOpen(false);
   };
 
@@ -68,7 +73,7 @@ const GrossMultipleCard: React.FC<Props> = ({ state, updateState }) => {
                 <NotepadText className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-2xl text-blue-500">{` ${state.askingPrice / state.grossRevenue} `}</p>
+            <p className="text-2xl text-blue-500">{` ${grossMultiple.toFixed(2)} `}</p>
           </div>
         </DialogTrigger>
         <DialogContent>

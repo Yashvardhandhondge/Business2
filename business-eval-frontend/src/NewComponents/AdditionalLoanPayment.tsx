@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { NotepadText } from "lucide-react";
-import { Trash2 } from "lucide-react";
+
 import Notes from "./Notes";
 // import { MessageCircle } from 'lucide-react';
 
@@ -20,7 +20,7 @@ interface Props {
   updateAdditionalLoan: (value: { amount: number; term: number; rate: number }) => void;
 }
 
-const AdditionalLoanPayment: React.FC<Props> = ({ state, updateState, updateAdditionalLoan }) => {
+const AdditionalLoanPayment: React.FC<Props> = ({ state, updateAdditionalLoan }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [additionalLoanPayment, setAdditionalLoanPayment] = useState(state.additionalLoanPayment);
   const [additionalLoanAmount, setAdditionalLoanAmount] = useState(state.additional_loan_amount);
@@ -28,6 +28,14 @@ const AdditionalLoanPayment: React.FC<Props> = ({ state, updateState, updateAddi
   const [additionalLoanTerm, setAdditionalLoanTerm] = useState(state.additional_loan_term);
   const [notes, setNotes] = useState("");
   const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
+
+  useEffect(() => {   
+    setAdditionalLoanPayment(state.additionalLoanPayment);
+    setAdditionalLoanAmount(state.additional_loan_amount);
+    setAdditionalLoanRate(state.additional_loan_rate);
+    setAdditionalLoanTerm(state.additional_loan_term);
+  }, [state]);
+
   const handleSaveChanges = () => {
     updateAdditionalLoan({ amount: additionalLoanAmount, term: additionalLoanTerm, rate: additionalLoanRate });
     setIsDialogOpen(false);
@@ -63,12 +71,13 @@ const AdditionalLoanPayment: React.FC<Props> = ({ state, updateState, updateAddi
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <label className="font-semibold" htmlFor="additionalLoanPayment">
-              Additional Loan Payment
+              Additional Loan Payment (Yearly)
             </label>
             <Input
               id="additionalLoanPayment"
               type="number"
               value={additionalLoanPayment}
+              disabled
               onChange={(e) => setAdditionalLoanPayment(parseFloat(e.target.value))}
               placeholder="Enter Additional Loan Payment"
               className="w-full"
